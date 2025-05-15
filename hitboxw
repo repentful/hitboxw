@@ -1,0 +1,168 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local themes = {"Default","AmberGlow","Amethyst","Bloom","DarkBlue","Green","Light","Ocean","Serenity"}
+
+local Window = Rayfield:CreateWindow({
+    Name = "hitboxw - Da Hood",
+    LoadingTitle = "Loading Da Hood Features...",
+    LoadingSubtitle = "by KQRMA",
+    Theme = "Amethyst",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "/hitboxw",
+        FileName = "Config"
+    },
+    KeySystem = true,
+    KeySettings = {
+        Title = "KQRMA HUB - Da Hood",
+        Subtitle = "Enter your key to access",
+        Note = "Join our Discord to get the key (discord.gg/GH3yqNxEEd)",
+        FileName = "Key",
+        SaveKey = false,
+        GrabKeyFromSite = false,
+        Key = {"key-@*!&$kqrma?+%#*!"}
+    }
+})
+
+-- Safe Service References
+local Players = game:GetService("Players")
+local RS = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Settings
+local hitboxEnabled = false
+local menuOpen = false -- starts closed
+local hitboxSize = 15
+local hitboxColor = Color3.fromRGB(255, 0, 0)
+
+-- Store original states for body parts
+local originalStates = {}
+
+-- Wait for PlayerGui to load
+repeat task.wait() until LocalPlayer:FindFirstChild("PlayerGui")
+
+-- GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "HitboxMenu"
+gui.ResetOnSpawn = false
+gui.Enabled = false
+gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "Hitbox Settings"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+
+local sizeInput = Instance.new("TextBox", frame)
+sizeInput.Position = UDim2.new(0.1, 0, 0.25, 0)
+sizeInput.Size = UDim2.new(0.8, 0, 0, 30)
+sizeInput.PlaceholderText = "Size (e.g. 13)"
+sizeInput.Text = tostring(hitboxSize)
+sizeInput.Font = Enum.Font.Gotham
+sizeInput.TextScaled = true
+sizeInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+sizeInput.TextColor3 = Color3.new(1, 1, 1)
+
+local colorInput = Instance.new("TextBox", frame)
+colorInput.Position = UDim2.new(0.1, 0, 0.5, 0)
+colorInput.Size = UDim2.new(0.8, 0, 0, 30)
+colorInput.PlaceholderText = "Color (R,G,B)"
+colorInput.Text = "255,0,0"
+colorInput.Font = Enum.Font.Gotham
+colorInput.TextScaled = true
+colorInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+colorInput.TextColor3 = Color3.new(1, 1, 1)
+
+local applyBtn = Instance.new("TextButton", frame)
+applyBtn.Position = UDim2.new(0.1, 0, 0.75, 0)
+applyBtn.Size = UDim2.new(0.8, 0, 0, 30)
+applyBtn.Text = "Apply Settings"
+applyBtn.Font = Enum.Font.GothamBold
+applyBtn.TextScaled = true
+applyBtn.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+applyBtn.TextColor3 = Color3.new(1, 1, 1)
+
+applyBtn.MouseButton1Click:Connect(function()
+	local newSize = tonumber(sizeInput.Text)
+	local r, g, b = colorInput.Text:match("(%d+),%s*(%d+),%s*(%d+)")
+	if newSize and r and g and b then
+		hitboxSize = newSize
+		hitboxColor = Color3.fromRGB(tonumber(r), tonumber(g), tonumber(b))
+	end
+end)
+
+-- Toggle GUI and Hitbox
+UIS.InputBegan:Connect(function(input, gp)
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.K then
+		menuOpen = not menuOpen
+		gui.Enabled = menuOpen
+	end
+	if input.KeyCode == Enum.KeyCode.H then
+		hitboxEnabled = not hitboxEnabled
+	end
+end)
+
+-- Store original state of the HumanoidRootPart
+local function storeOriginalState(player)
+	if not originalStates[player] then
+		originalStates[player] = {}
+	end
+	local part = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+	if part then
+		originalStates[player]["HumanoidRootPart"] = {
+			Size = part.Size,
+			Color = part.Color,
+			Material = part.Material,
+			Transparency = part.Transparency,
+			CanCollide = part.CanCollide
+		}
+	end
+end
+
+-- Restore original state of the HumanoidRootPart
+local function restoreOriginalState(player)
+	if originalStates[player] then
+		local part = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if part then
+			local data = originalStates[player]["HumanoidRootPart"]
+			part.Size = data.Size
+			part.Color = data.Color
+			part.Material = data.Material
+			part.Transparency = data.Transparency
+			part.CanCollide = data.CanCollide
+		end
+		originalStates[player] = nil
+	end
+end
+
+-- Hitbox Loop
+RS.RenderStepped:Connect(function()
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character then
+			local HRP = player.Character:FindFirstChild("HumanoidRootPart")
+			if hitboxEnabled and HRP then
+				if not originalStates[player] then
+					storeOriginalState(player)
+				end
+				HRP.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)
+				HRP.Color = hitboxColor
+				HRP.Transparency = 0.55
+				HRP.Material = Enum.Material.ForceField
+				HRP.CanCollide = false
+			elseif HRP then
+				restoreOriginalState(player)
+			end
+		end
+	end
+end)
