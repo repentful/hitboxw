@@ -104,7 +104,7 @@ end)
 -- Toggle GUI and Hitbox
 UIS.InputBegan:Connect(function(input, gp)
 	if gp then return end
-	if input.KeyCode == Enum.KeyCode.K then
+	if input.KeyCode == Enum.KeyCode.B then
 		menuOpen = not menuOpen
 		gui.Enabled = menuOpen
 	end
