@@ -4,7 +4,7 @@ local themes = {"Default","AmberGlow","Amethyst","Bloom","DarkBlue","Green","Lig
 
 local Window = Rayfield:CreateWindow({
     Name = "hitboxw - Da Hood",
-    LoadingTitle = "Loading Da Hood Features...",
+    LoadingTitle = "Loading Da Hood Hitbox...",
     LoadingSubtitle = "by KQRMA",
     Theme = "Amethyst",
     ConfigurationSaving = {
@@ -20,7 +20,7 @@ local Window = Rayfield:CreateWindow({
         FileName = "Key",
         SaveKey = false,
         GrabKeyFromSite = false,
-        Key = {"key-@*!&$kqrma?+%#*!"}
+        Key = {"$^&!*key-@*!&$kqrma?+%#+_-!)#@*!"}
     }
 })
 
@@ -33,7 +33,7 @@ local LocalPlayer = Players.LocalPlayer
 -- Settings
 local hitboxEnabled = false
 local menuOpen = false -- starts closed
-local hitboxSize = 15
+local hitboxSize = 10
 local hitboxColor = Color3.fromRGB(255, 0, 0)
 
 -- Store original states for body parts
